@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+img {
+    max-width: 100%;
+}
+#debug *{ border: 1px dashed white;}
+
+:root{
+    font-family: Helvetica, Inter, system-ui, Avenir, Arial, sans-serif;
+    --background:  #f0f6fc;  /*color from white of github site*/
+    --foreground: #0d1117;  /*color from black of github site*/
+
+}
+@theme inline {   /* setti questi colori/fonts che tailwind usera x le sue utility */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+
+/* 
+Discord app colors Blacks:
+#121214    --sopra--> #222225(action)  #2c2c30 (selected contatto persona/groupo chat)  ##202024(user you)
+#1a1a1e(section all mexages selected person/group) --sopra--> #29292d(action)  #242429(file)    ##222327(write mex box)       
+#242429(section info contatto other)  --sopra-->#2c2d32(boxes info about ect)
+
+*/

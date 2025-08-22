@@ -1,0 +1,1 @@
+//postcss è un trasformatore di css, legge css+applica tailwind ect per generare il file css finale alla build.

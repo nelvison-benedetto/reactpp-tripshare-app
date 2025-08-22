@@ -1,0 +1,1 @@
+//colori,fonts,theme,spacings ect personalizzati applicati a tailwind da cui poi verranno costruite le utility
