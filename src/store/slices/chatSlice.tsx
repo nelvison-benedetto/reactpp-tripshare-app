@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface Message {
   id: string;
@@ -25,8 +26,7 @@ const chatSlice = createSlice({
       state.activeConversationId = action.payload;
     },
     addMessage: (
-      state,
-      action: PayloadAction<{ conversationId: string; message: Message }>
+      state, action: PayloadAction<{ conversationId: string; message: Message }>
     ) => {
       const { conversationId, message } = action.payload;
       if (!state.messages[conversationId]) {
@@ -40,6 +40,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConversation, addMessage, clearConversation } =
-  chatSlice.actions;
+export const { setActiveConversation, addMessage, clearConversation } = chatSlice.actions;
 export default chatSlice.reducer;

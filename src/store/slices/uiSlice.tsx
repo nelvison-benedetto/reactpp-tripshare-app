@@ -16,9 +16,10 @@ const uiSlice = createSlice({  //slice, containing more reducers, createSlice() 
   initialState,
   reducers: {
     toggleDarkMode: (state) => {   //reducer
-      state.darkMode = !state.darkMode;
+      state.darkMode = !state.darkMode;  //grazie a Immer.js che sotto stotto crea sempre una copia e modifica la copia.
     },
-    setSidebarOpen: (state, action: PayloadAction<boolean>) => {   //reducer
+    setSidebarOpen: (state, action: PayloadAction<boolean>) => {   //reducer, PayloadAction<> serve a tipizzazre il payload dell’azione,
+        //here TS cosi sa che il payload deve essere obbligatoriamente true/false
       state.sidebarOpen = action.payload;
     },
   },

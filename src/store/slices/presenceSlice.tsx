@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface PresenceState {
-  onlineUsers: string[]; // array di userId
+  onlineUsers: string[];   //array di userId
 }
 
 const initialState: PresenceState = {
@@ -25,3 +26,5 @@ const presenceSlice = createSlice({
 
 export const { userOnline, userOffline } = presenceSlice.actions;
 export default presenceSlice.reducer;
+
+

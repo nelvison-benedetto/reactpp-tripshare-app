@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
-  user: any | null;
+  user: unknown | null;  //TS preferisce unknown rispetto ad any, pero devo poi sempre fare il check if (user && typeof user === "object" && "name" in user){} ('name' è una key in obj user) 
   loading: boolean;
 }
 
@@ -14,7 +15,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<any | null>) => {
+    setUser: (state, action: PayloadAction<unknown | null>) => {
       state.user = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -28,3 +29,5 @@ const authSlice = createSlice({
 
 export const { setUser, setLoading, logout } = authSlice.actions;
 export default authSlice.reducer;
+
+//MORE NOTES on store/slices/uiSlice.tsx
