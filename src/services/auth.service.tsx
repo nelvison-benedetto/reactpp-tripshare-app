@@ -2,14 +2,15 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../libs/supabaseClient";
 
 
-export async function login(email: string, password: string): Promise<{ user: User; session: Session }> { //visto che è sync ritorna sempre type Promise
+export async function signIn(email: string, password: string): Promise<{ user: User; session: Session }> { //visto che è sync ritorna sempre type Promise
   const { data, error } = await supabase.auth.signInWithPassword({ email, password});
     //data contiene user and session
   if (error || !data.user || !data.session) throw error ?? new Error("Login failed");  //if error è null/undefined, allo usa X.
   return { user: data.user, session: data.session };
 }
 
-export async function signup(email: string, password: string, redirectTo?: string): Promise<{  //redirectTo is optional, //visto che è sync ritorna sempre type Promise
+
+export async function signUp(email: string, password: string, redirectTo?: string): Promise<{  //redirectTo is optional, //visto che è sync ritorna sempre type Promise
   user: User | null;
   session: Session | null;
   needsEmailVerification: boolean;
@@ -27,7 +28,8 @@ export async function signup(email: string, password: string, redirectTo?: strin
   };
 }//può essere null e anche session di solito è null finche l'utente non conferma tramite email
 
-export async function logout(): Promise<void> {  //visto che è sync ritorna sempre type Promise
+
+export async function signOut(): Promise<void> {  //visto che è sync ritorna sempre type Promise
   const { error } = await supabase.auth.signOut();  //invalida la sessione locale server + chiude sessione server
   if (error) throw error;
 }

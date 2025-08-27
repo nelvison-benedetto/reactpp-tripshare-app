@@ -9,12 +9,12 @@
 img {
     max-width: 100%;
 }
-#debug *{ border: 1px dashed white;}
+#debug *{ border: 1px dashed black;}
 
 :root{
     font-family: Helvetica, Inter, system-ui, Avenir, Arial, sans-serif;
     --background:  #f0f6fc;  /*color from white of github site*/
-    --foreground: #0d1117;  /*color from black of github site*/
+    --foreground:  #0d1117;  /*color from black of github site*/
 
 }
 @theme inline {   /* setti questi colori/fonts che tailwind usera x le sue utility */
