@@ -21,7 +21,7 @@ export function useAuthListener() {
     ( async () => {
       try {
         const { data } = await supabase.auth.getUser();
-        dispatch(setUser(data.user ?? null));  //dispatch(cioe useAppDispatch cioe useDispatch) è l'unico modo x aggiornare lo stato setUser
+        dispatch(setUser(data.user ?? null));  //dispatch(cioe useAppDispatch custom) è l'unico modo x aggiornare lo stato setUser
           //aggiorni l'user
       } catch (err) {
         console.error('getUser failed', err);
@@ -43,12 +43,12 @@ export function useAuthListener() {
     );
 
     // estrai subscription in modo difensivo (compatibilità con variazioni di supabase api)
+    //Se res.data.subscription esiste, usalo. Altrimenti, usa res direttamente
     if ("data" in res && res.data && "subscription" in res.data) {
       subscriptionRef = res.data.subscription as SubscriptionLike;
     } else {
       subscriptionRef = res as SubscriptionLike;
     }
-        //Se res.data.subscription esiste, usalo. Altrimenti, usa res direttamente
 
     //3- cleanup, rimuove il listener quando si smonta il componente, liberando memory!!
     return () => {
@@ -58,8 +58,8 @@ export function useAuthListener() {
         console.warn('Failed to unsubscribe auth listener', e);
       }
     };
-  }, [dispatch]);  //dispatcher non cambia mai durante il ciclo di vita dell'app, tutto questo code viene eseguito 1 volta 
-  //al montaggio di App.tsx, poi si attivera sempre e solo   const res = supabase.auth.onAuthStateChange(...)
+  }, [dispatch]);  //dispatch non cambia mai durante il ciclo di vita dell'app, tutto questo code viene eseguito 1 volta 
+  //al montaggio di App.tsx, e poi si attivera sempre e solo   const res = supabase.auth.onAuthStateChange(...)
   //perche Supabase la attiva quando cambia la sessione(anche se utente non fa assolutamente nulla) !!
 
 }

@@ -6,8 +6,9 @@ import type {UserDBFormat} from "../../../types/user"
 //ponte realtime tra Supabase e React Query: iscrive il client agli eventi realtime di Postgres, 
 //cosi ppena cambia la riga users di quell’utente aggiorna SUBITO la cache React Query target, no bisogno di refetch a comando.
 
+//lavora in coppia w useUserProfile
 export function useRealtimeUserProfile(userId?: string | null) {
-  const qc = useQueryClient();
+  const qc = useQueryClient();  //grazie a <QueryClientProvider client={queryClient}>, stai gia utilizzando la tua custom queryClient
 
   useEffect(() => {  //si esegue 1 volta quando si monta il componente, cio basta x accendere il Canale, poi l'unico modo per chiuderlo è se this useRealtimeUserProfile si smonta / useEffect si riesegue xk cambia userId  or qc 
     if (!userId) return;
@@ -26,6 +27,9 @@ export function useRealtimeUserProfile(userId?: string | null) {
           if (payload.eventType === "UPDATE" || payload.eventType === "INSERT") {
             const fresh = payload.new as UserDBFormat;
             qc.setQueryData(["user-profile", userId], fresh);  //sovrascrive la cache target con i dati freschi
+          }
+          if (payload.eventType === "DELETE") {
+            qc.setQueryData(["user-profile", userId], null);  //svuoti la query cache target!!
           }
         }
       )

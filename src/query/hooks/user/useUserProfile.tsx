@@ -2,9 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../libs/supabaseClient";
 import type { UserDBFormat } from "../../../types/user";
 
-export function useUserProfile(userId?: string | null) {
+
+//serve solo per creare query cache + fare SELECT avendo un id, su tabella 'users' e ottenere tutti i dati del target user + popolare cache con i results
+//dopodiche in realta useUserProfile rimane sempre in ascolto su quella query-cache.
+//se useRealtimeUserProfile grazie a setQueryData() sovrascrive i dati su questa query-cache, react-query avverte useUserProfile e Reactjs rifa il rendering!
+
+//dunque usi useUserProfile + useRealtimeUserProfile, dentro un comp per ottenere l'user X dal db & attivare aggiornamenti realtime legati a user X  
+  //e.g. li puoi usare dentro comp UserProfile ed a entrambi passi lo stesso userId
+
+export function useUserProfile(userId?: string | null) {   //questo lo utilizzi solo per i SELECT su tabella users
 
   return useQuery<UserDBFormat | null, Error>({  //crei voce univoca nella cache di React Query
+
     queryKey: ["user-profile", userId],  //chiave univoca della cache
     enabled: Boolean(userId),  //evita che la query parte (queryFn) quando userId è false (convertito a false se era undefined/null/falsy)
     queryFn: async ({ queryKey }) => {  //funct che effetua la fetch
@@ -20,6 +29,7 @@ export function useUserProfile(userId?: string | null) {
     },
     staleTime: 1000 * 60, //freshness dei dati= 1minuto
     retry: 1,  //se fa errore ritenta al massimo ancora 1 volta
+
   });
 
 }

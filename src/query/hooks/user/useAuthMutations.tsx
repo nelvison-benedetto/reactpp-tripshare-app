@@ -5,11 +5,12 @@ import { setUser, logout } from "../../../store/slices/authSlice";
 //import type { Credentials, SignInResult } from "../../../types/auth";
 
 
-//3 React Query mutations hooks che incapsulano l’autenticazione con Supabase e la sincronizzazione con Redux
+//3 React Query mutations hooks che utilizzerai nella tua app X SIGNIN-SIGNUP-SIGNOUT
+//incapsulano l’autenticazione con Supabase e la sincronizzazione w Redux
 
 export function useSignIn() {
   const dispatch = useAppDispatch();
-  const qc = useQueryClient();
+  const qc = useQueryClient();  //grazie a <QueryClientProvider client={queryClient}>, stai gia utilizzando la tua custom queryClient
 
   return useMutation({  //x insert/update/delete sul server, invece useQuery() fa solo read
     mutationFn: ({ email, password }: { email: string; password: string }) =>  //funct principale che fa l'operazione
@@ -30,7 +31,7 @@ export function useSignUp() {
 
   return useMutation({
     mutationFn: ({ email, password, redirectTo }: { email: string; password: string; redirectTo?: string }) =>
-      signUp(email, password, redirectTo),  //esegue il mio custom signUp
+      signUp(email, password, redirectTo),  //esegue il mio custom signUp presente in services/auth.service.tsx
     onSuccess: ({ user, needsEmailVerification }) => {
       if (user && !needsEmailVerification) {
         dispatch(setUser(user));

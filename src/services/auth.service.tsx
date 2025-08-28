@@ -15,13 +15,13 @@ export async function signUp(email: string, password: string, redirectTo?: strin
   session: Session | null;
   needsEmailVerification: boolean;
 }> {
-  const { data, error } = await supabase.auth.signUp(
+  const { data, error } = await supabase.auth.signUp(  //supabase ti ritornerà obj, al cui interno estrai solo data & error 
     redirectTo ? 
       { email, password, options: { emailRedirectTo: redirectTo } } :  //emailRedirectTo per reinderizzare in auto utente su url target(e.g. https://myapp.com/auth/callback) appena schiccia il link sulla email di conferma
       { email, password }
   );
   if (error) throw error;
-  return {
+  return {  
     user: data.user ?? null,  //se data.user is null/undefined, allora usa null
     session: data.session ?? null,
     needsEmailVerification: !data.session, //se non c'è session, allora needsEmailVerification=true e quindi serve conferma email
