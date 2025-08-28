@@ -14,7 +14,7 @@ export function useUserProfile(userId?: string | null) {   //questo lo utilizzi 
 
   return useQuery<UserDBFormat | null, Error>({  //crei voce univoca nella cache di React Query
 
-    queryKey: ["user-profile", userId],  //chiave univoca della cache
+    queryKey: ["user-profile", userId],  //!!array che identifica in modo univoco i dati in cache. e.g ["xxx",1] sarà in cache diversa di ["xxx",2], ovviamente anche l'ordine all'interno di [] è importante x distinguerle
     enabled: Boolean(userId),  //evita che la query parte (queryFn) quando userId è false (convertito a false se era undefined/null/falsy)
     queryFn: async ({ queryKey }) => {  //funct che effetua la fetch
       const id = queryKey[1] as string;
