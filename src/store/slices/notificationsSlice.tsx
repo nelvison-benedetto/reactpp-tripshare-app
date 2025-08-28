@@ -1,19 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-
-
-interface Notification {
-  id: string;
-  message: string;
-  read: boolean;
-  createdAt: string;
-}
+import type {NotificationDBFormat} from "../../types/db";
 
 interface NotificationsState {
-  items: Notification[];
+  items: NotificationDBFormat[];
 }
 
-const initialState: NotificationsState = {
+const initialState: NotificationsState ={
   items: [],
 };
 
@@ -21,7 +14,7 @@ const notificationsSlice = createSlice({
   name: "notifications",
   initialState,
   reducers: {
-    addNotification: (state, action: PayloadAction<Notification>) => {
+    addNotification: (state, action: PayloadAction<NotificationDBFormat>) => {
       state.items.unshift(action.payload);
     },
     markAsRead: (state, action: PayloadAction<string>) => {

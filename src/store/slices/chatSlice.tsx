@@ -1,16 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-
-interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-  createdAt: string;
-}
+import type {MessageDBFormat} from "../../types/db";
 
 interface ChatState {
   activeConversationId: string | null;
-  messages: Record<string, Message[]>; // conversationId → messages
+  messages: Record<string, MessageDBFormat[]>; // conversationId → messages
 }
 
 const initialState: ChatState = {
@@ -26,7 +20,7 @@ const chatSlice = createSlice({
       state.activeConversationId = action.payload;
     },
     addMessage: (
-      state, action: PayloadAction<{ conversationId: string; message: Message }>
+      state, action: PayloadAction<{ conversationId: string; message: MessageDBFormat }>
     ) => {
       const { conversationId, message } = action.payload;
       if (!state.messages[conversationId]) {
