@@ -6,9 +6,10 @@ Progetto in sviluppo utilizzando Reactjs + Typescript + TailwindCSS + many other
 - Utilizzo supabase triggers per aggiornare automaticamente sia quando fai insert/update sia alle 3AM, il field 'recent' (presente solo in alcune tabelle) a 'false' solo se post/comment/ect è piu vecchio di 30/90gg (il calcolo utilizza now() e il field 'updated_at').
 - Utilizzo indexes normali e parziali(che prendono solo il subset 'recent'=true) per velocizzare le operazioni di select per queste tabelle.
 - Utilizzo di supabase Realtime(utilizza i websocket) su tabs users, posts, comments, messages, notifications.
-applicazione di RLS e Policy custom su tabs posts, comments, messages, notifications.
+Applicazione di RLS e Policy custom su tabs posts, comments, messages, notifications.
+- Utilizzo di supabase Storage con creazione di buckets images(public), thumbnails(public), videos(private), documents(private).
 
 # Frontend
 Reactjs + Typescript + TailwindCSS + DaisyUI
-- other libs: Redux, React-Query, react-router-dom, react-snap, react-helmet, react-lazy-load-image-component, vite-imagetools, vite-plugin-compression, supabase.
+- other libs: Redux, React-Query, react-router-dom, react-snap, react-helmet, react-lazy-load-image-component, vite-imagetools, vite-plugin-compression, uuid, react-hook-form, @hookform/resolvers, zod, supabase.
 
