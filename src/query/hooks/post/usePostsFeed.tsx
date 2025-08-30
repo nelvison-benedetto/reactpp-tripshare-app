@@ -23,7 +23,7 @@ export function usePostsFeed({ limit = 12, authorId }: Params = {}) {
         .from("posts")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(limit + 1);   //+1 per capire se esiste next page
+        .limit(limit + 1);   //prende 1 post extra per capire se esiste una prossima pagina
 
       if (authorId) q = q.eq("author_id", authorId);
       if (pageParam) q = q.lt("created_at", pageParam); // cursor-based
