@@ -35,12 +35,28 @@ type CreatePostInput = {
 //   });
 // }
 
+function getUploadPath(file: File, postId: string, userId?: string) {
+  const ext = file.name.split(".").pop();  //prende l'ultima parte del nome file, cioe l'estensione e.g. png/jpg/mp3/ect
+  if (file.type.startsWith("image/")) {
+    const path = userId
+      ? `users/${userId}/avatar.${ext}`   // per avatar
+      : `posts/${postId}/${uuidv4()}.${ext}`; // per post, uuidv4() genera un id univoco, cosi ora il key è davvero univoco per questo media
+    return { bucket: "images", path, type: "image" };
+  }
+  if (file.type.startsWith("video/")) {
+    return { bucket: "videos", path: `posts/${postId}/${uuidv4()}.${ext}`, type: "video" };
+  }
+  // altrimenti documenti
+  return { bucket: "documents", path: `posts/${postId}/${uuidv4()}.${ext}`, type: "document" };
+}
+
 export function useCreatePost() {
   const qc = useQueryClient();
   return useMutation({
+
     mutationFn: async (formData: CreatePostInput) => {  //funct principale che fa l'operazione
 
-      const { data: post, error: postError } = await supabase
+      const { data: post, error: postError } = await supabase  //da supabase come result ottieni {..,data,error,...}, qua li rinomini semplicemente in 'post' e 'postError'
         .from("posts")
         .insert([{
           content: formData.content,
@@ -57,41 +73,55 @@ export function useCreatePost() {
         .select()
         .single();
       if (postError) throw postError;
+      const createdPost: PostDBFormat = post;
 
       //upload media se esistono
       const files = formData.mediaFiles;
       if (files && files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const ext = file.name.split(".").pop();
-          const key = `posts/${post.id}/${uuidv4()}.${ext}`;
+          const { bucket, path, type } = getUploadPath(file, createdPost.id, formData.userId);
+          
           const { error: uploadError } = await supabase.storage
-            .from("media")
-            .upload(key, file, { upsert: false });
+            .from(bucket)  //seleziona il bucket target
+            .upload(path, file, { upsert: false });  //carica il file sotto la chiave key, upsert non sovrascrive se esiste gia una key identica salvata(possibilita al 50% dopo 100anni,quindi ok) ma lancia errore se cio accade
           if (uploadError) throw uploadError;
 
-          const { data: publicUrlData } = supabase.storage.from("media").getPublicUrl(key);
+          //recupera URL (signed se video/document)
+          const urlData = 
+            bucket === "videos" || bucket === "documents"  //cioe quelli che su supabase sono privati
+              ? await supabase.storage.from(bucket).createSignedUrl(path, 60*60)  //1h di tempo in cui il link è valido
+              : supabase.storage.from(bucket).getPublicUrl(path);
+          const url = bucket === "videos" || bucket === "documents"
+            ? urlData.signedUrl
+            : urlData.publicUrl;
+
+          //inserisci metadata nella tab media
           const { error: mediaError } = await supabase.from("media").insert([{
-            post_id: post.id,
-            url: publicUrlData.publicUrl,
-            type: file.type.startsWith("image") ? "image" : "video",
+            post_id: createdPost.id,
+            url,
+            type,
           }]);
           if (mediaError) throw mediaError;
         }
       }
-      return post as PostDBFormat;
+
+      return createdPost;
     },
-    onMutate: async (newPost) => {
-      await qc.cancelQueries({ queryKey: ["posts", "feed"] });
-      const previous = qc.getQueryData<any>(["posts", "feed"]);
-      const tempPost: Partial<PostDBFormat> = {
+
+    onMutate: async (newPost) => {  //eseguita poco prima che la mutation effettiva venga inviata al server
+      await qc.cancelQueries({ queryKey: ["posts", "feed"] });  //ferma eventuali cachequery su cache ["posts", "feed",...]
+      const previous = qc.getQueryData<unknown>(["posts", "feed"]);  //save lo stato attuale di cache ["posts", "feed",...], serve se per caso dovrai fare rollerback a causa di un errore
+      
+      const tempPost: Partial<PostDBFormat> = { //crei post sample easy
         id: `temp-${uuidv4()}`,
-        author_id: "me", // TODO: prendi dal contesto user
+        author_id: newPost.userId,
         content: newPost.content,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      qc.setQueryData(["posts", "feed"], (old: any) => {
+
+      qc.setQueryData(["posts", "feed"], (old: unknown) => {
         if (!old) return old;
         const firstPage = old.pages?.[0];
         if (!firstPage) return old;
@@ -105,10 +135,11 @@ export function useCreatePost() {
       });
       return { previous };
     },
-    onError: (err, _newPost, ctx: any) => {
-      qc.setQueryData(["posts", "feed"], ctx.previous);
+    onError: (err, _newPost, ctx: unknown) => {  //se la mutation fallisce, ripristina tutto a stato precedente (ctx.previous)
+      qc.setQueryData(["posts", "feed"], ctx.previous); 
+      console.error("create post failed", err); 
     },
-    onSettled: () => {
+    onSettled: () => {  //dopo che la mutation è successo/failure, cmnq invalidi la cache x cache["posts", "feed",..](cioe quella x il feed)
       qc.invalidateQueries({ queryKey: ["posts", "feed"] });
     },
   });
