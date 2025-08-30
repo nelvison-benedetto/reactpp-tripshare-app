@@ -1,7 +1,7 @@
 import { useMemo, useRef, useEffect } from "react"; //hooks react
 import { Link } from "react-router-dom";
-import { usePostsFeed } from "../../query/hooks/post/usePostsFeed";
-import { useRealtimePostsFeed } from "../../query/hooks/post/useRealtimePostsFeed";
+import { usePostsFeed } from "../../../query/hooks/post/usePostsFeed";
+import { useRealtimePostsFeed } from "../../../query/hooks/post/useRealtimePostsFeed";
 
 export default function FeedList() {
   const {
@@ -17,7 +17,8 @@ export default function FeedList() {
   useRealtimePostsFeed();
 
   //flatten delle pagine
-  const posts = useMemo(
+  const posts = useMemo(  //useMemo SALVA IN CACHE IL RISULTATO, lo ricalcola solo se [data] cambia. 
+    // non si ricalcola automaticamnete quindi re-renderizza se cambia hasNextPage,isFetching,ect. molto piu efficente!!
     //re-executed when [data] changes
     () => data?.pages.flatMap((p) => p.items) ?? [], //se data esiste, esegui .pages (data.pages è un array di pagine)
     //flatMap((p) => p.items) prende tutti i post da tutte le pagine e li mette in un unico array piatto
