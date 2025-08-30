@@ -3,6 +3,7 @@ import { supabase } from "../../../libs/supabaseClient";
 import { useQueryClient } from "@tanstack/react-query";
 import type { PostDBFormat } from "../../../types/db";
 
+
 export function useRealtimePost(postId?: string | null) {
   const qc = useQueryClient();
 
